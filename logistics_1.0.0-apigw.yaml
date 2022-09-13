@@ -1,0 +1,166 @@
+swagger: '2.0'
+info:
+  x-ibm-name: logistics-apigw
+  title: logistics-apigw
+  version: 2.0.0
+schemes:
+  - https
+basePath: /logistics
+consumes:
+  - application/json
+produces:
+  - application/json
+securityDefinitions:
+  clientID:
+    description: ''
+    in: header
+    name: X-IBM-Client-Id
+    type: apiKey
+security:
+  - clientID: []
+x-ibm-configuration:
+  testable: true
+  enforced: true
+  cors:
+    enabled: true
+  gateway: datapower-api-gateway
+  catalogs:
+    apic-dev:
+      properties:
+        runtime-url: $(TARGET_URL)
+  properties:
+    shipping_svc_url:
+      value: 'https://thinkibm-services.mybluemix.net/shipping/calculate'
+      description: Location of the shipping calculator service
+      encoded: false
+    runtime-url:
+      value: ''
+      encoded: false
+      description: ''
+  assembly:
+    execute: []
+  compatibility:
+    enforce-required-params: false
+    comment:
+      - 'API44: Set compatibility toggle `enforce-required-params` to value: `false`. For details, see: https://www.ibm.com/docs/en/api-connect/10.0.x?topic=cadag-messages-generated-during-conversion-apis-datapower-api-gateway#SET_COMPATIBILITY_TOGGLE'
+      - 'API44: Set compatibility toggle `request-headers` to value: `true`. For details, see: https://www.ibm.com/docs/en/api-connect/10.0.x?topic=cadag-messages-generated-during-conversion-apis-datapower-api-gateway#SET_COMPATIBILITY_TOGGLE'
+      - >-
+        API43: Created `compatibility:` section for API-wide toggles set by migration utility. For details, see:
+        https://www.ibm.com/docs/en/api-connect/10.0.x?topic=cadag-messages-generated-during-conversion-apis-datapower-api-gateway#COMPATIBILITY_INFO
+    request-headers: true
+    migrated-api: true
+  buffering: true
+paths:
+  /shipping:
+    get:
+      responses:
+        '200':
+          description: 200 OK
+          schema:
+            $ref: '#/definitions/shipping'
+      summary: Calculate shipping costs to a destination zip code
+      operationId: shipping.calc
+      parameters:
+        - name: zip
+          type: string
+          required: true
+          in: query
+          description: Destination zip code.
+  /stores:
+    get:
+      responses:
+        '200':
+          description: 200 OK
+          schema:
+            $ref: '#/definitions/store_location'
+      tags:
+        - stores
+      summary: Locate store near zip code
+      operationId: get.stores
+      parameters:
+        - name: zip
+          type: string
+          required: true
+          in: query
+definitions:
+  rates:
+    properties:
+      next_day:
+        type: string
+        example: '20.00'
+      two_day:
+        type: string
+        example: '17.00'
+      ground:
+        type: string
+        example: '8.00'
+    required:
+      - two_day
+      - next_day
+      - ground
+  shipping:
+    properties:
+      xyz:
+        $ref: '#/definitions/rates'
+      cek:
+        $ref: '#/definitions/rates'
+    required:
+      - xyz
+      - cek
+  store_location:
+    properties:
+      google_maps_link:
+        type: string
+        example: 'https://www.google.com/maps?q=34.1030032,-118.4104684'
+    required:
+      - google_maps_link
+  cek_shipping_rsp:
+    properties:
+      company:
+        type: string
+      rates:
+        type: object
+        properties:
+          next_day:
+            type: string
+          two_day:
+            type: string
+          ground:
+            type: string
+    required:
+      - company
+      - rates
+  xyz_shipping_rsp:
+    properties:
+      company:
+        type: string
+      rates:
+        type: object
+        properties:
+          next_day:
+            type: string
+          two_day:
+            type: string
+          ground:
+            type: string
+    required:
+      - company
+      - rates
+x-ibm-comment:
+  - 'AMU version used to port this API: v10.0.4.0-R7-264e5e192f52026f31b6dd9a2b15e40a3cad8652-2022-06-15T22:19:15Z'
+  - 'API03: Suffix -apigw appended to API `title` and `x-ibm-name`. For details, see: https://www.ibm.com/docs/en/api-connect/10.0.x?topic=cadag-messages-generated-during-conversion-apis-datapower-api-gateway#API_NAME_ADDED_SUFFIX'
+  - 'API06: Changed gateway type to `datapower-api-gateway`.'
+  - 'API14: Ported v5-compatible policies to work with the API Gateway and updated policy versions.'
+  - >-
+    API56: Catalog specific API Property found without a corresponding default property: runtime-url for catalog: apic-dev, created empty string default property at the API level. For details, see:
+    https://www.ibm.com/docs/en/api-connect/10.0.x?topic=cadag-messages-generated-during-conversion-apis-datapower-api-gateway#CATALOG_PROPERTIES_FOUND_NO_DEFAULT
+  - >-
+    API45: Compatibility toggle: `allow-chunked-uploads` set to value: `false`, which is the same as the API Gateway default. For details, see:
+    https://www.ibm.com/docs/en/api-connect/10.0.x?topic=cadag-messages-generated-during-conversion-apis-datapower-api-gateway#COMPAT_TOGGLE_MATCHES_APIGW_DEFAULT
+  - >-
+    API45: Compatibility toggle: `copy-id-headers-to-message` set to value: `false`, which is the same as the API Gateway default. For details, see:
+    https://www.ibm.com/docs/en/api-connect/10.0.x?topic=cadag-messages-generated-during-conversion-apis-datapower-api-gateway#COMPAT_TOGGLE_MATCHES_APIGW_DEFAULT
+  - >-
+    API45: Compatibility toggle: `return-v5-responses` set to value: `false`, which is the same as the API Gateway default. For details, see:
+    https://www.ibm.com/docs/en/api-connect/10.0.x?topic=cadag-messages-generated-during-conversion-apis-datapower-api-gateway#COMPAT_TOGGLE_MATCHES_APIGW_DEFAULT
+  - 'API61: Set buffering property to true. For details, see: https://www.ibm.com/docs/en/api-connect/10.0.x?topic=cadag-messages-generated-during-conversion-apis-datapower-api-gateway#SET_BUFFERING'
