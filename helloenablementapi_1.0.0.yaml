@@ -1,0 +1,67 @@
+swagger: '2.0'
+info:
+  title: HelloEnablementAPI
+  x-ibm-name: helloenablementapi
+  version: 1.0.0
+  description: Hello Enablement API Connect
+  contact:
+    name: Oscar Dario Gonzalez
+    email: ogonzalez@gbm.net
+    url: https://gbm.net/
+x-ibm-configuration:
+  cors:
+    enabled: true
+  gateway: datapower-api-gateway
+  type: rest
+  phase: realized
+  enforced: true
+  testable: true
+  assembly:
+    execute:
+      - gatewayscript:
+          version: 2.0.0
+          title: greeting
+          source: >-
+            var saludo = { "mensaje": "Hola API Lover from this enablement",
+            "version": 10 };
+
+            context.message.body.write(saludo);
+
+            context.message.header.set('Content-Type', "application/json");
+    catch: []
+    finally: []
+  properties:
+    target-url:
+      value: http://example.com/operation-name
+      description: The URL of the target service
+      encoded: false
+  activity-log:
+    enabled: true
+    success-content: activity
+    error-content: payload
+basePath: /hea
+paths:
+  /greeting:
+    get:
+      responses:
+        '200':
+          description: success
+          schema:
+            type: string
+      consumes: []
+      produces: []
+securityDefinitions:
+  clientID:
+    type: apiKey
+    in: header
+    name: X-IBM-Client-Id
+  clientSecret:
+    type: apiKey
+    name: X-IBM-Client-Secret
+    x-key-type: client_secret
+    in: header
+security:
+  - clientSecret: []
+    clientID: []
+schemes:
+  - https
